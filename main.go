@@ -5,6 +5,7 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/Appamada/mydocker/cgroup/subsystem"
 	"github.com/Appamada/mydocker/container"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
@@ -57,25 +58,36 @@ var runCommand = cli.Command{
 		for _, arg := range context.Args() {
 			cmdArray = append(cmdArray, arg)
 		}
-		cmd := context.Args().Get(0)
+
 		tty := context.Bool("ti")
-		Run(tty, cmd)
+
+		resConf := &subsystem.ResourceConfig{
+			MemoryLimit: context.String("m"),
+			CpuShare:    context.String("cpu"),
+			CpuSet:      context.String("cpuset"),
+		}
+
+		Run(tty, cmdArray, resConf)
 		return nil
 	},
 }
 
-func Run(tty bool, cmd string) {
-	parent := container.NerParentProcess(tty, cmd)
-	if err := parent.Start(); err != nil {
-		log.Error(err)
+func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
+	parent, writePipe := container.NerParentProcess(tty)
+	if parent == nil {
+		log.Errorf("ner parent process error")
+		return
 	}
-	parent.Wait()
+
+	if err := parent.Start(); err != nil {
+		log.Errorf("parent start error %v", err)
+		return
+	}
 
 	if err := syscall.Unmount("/proc", 0); err != nil {
 		log.Error(err)
 	}
 
-	os.Exit(-1)
 }
 
 func main() {
