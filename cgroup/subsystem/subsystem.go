@@ -1,0 +1,14 @@
+package subsystem
+
+type ResourceConfig struct {
+	MemoryLimit string
+	CpuShare    string
+	CpuSet      string
+}
+
+type SubSystem interface {
+	Apply(cgorupPath string, Pid int) error
+	Set(cgorupPath string, res *ResourceConfig) error
+	Remove(cgorupPath string) error
+	Name() string
+}
