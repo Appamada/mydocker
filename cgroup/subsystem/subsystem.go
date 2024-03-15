@@ -12,3 +12,11 @@ type SubSystem interface {
 	Remove(cgorupPath string) error
 	Name() string
 }
+
+var (
+	SubsystemsIns = []SubSystem{
+		&CpuSubSystem{},
+		&CpuSetSubSystem{},
+		&MemorySubSystem{},
+	}
+)

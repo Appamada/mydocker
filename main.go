@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 	"syscall"
 
 	"github.com/Appamada/mydocker/cgroup/subsystem"
@@ -20,9 +21,7 @@ var initCommand = cli.Command{
 	Usage: "Init container process run user's process in container. Do not call it outside",
 	Action: func(context *cli.Context) error {
 		log.Infof("init come on")
-		cmd := context.Args().Get(0)
-		log.Infof("command %s", cmd)
-		err := container.RunContainerInitProcess(cmd, nil)
+		err := container.RunContainerInitProcess()
 		return err
 	},
 }
@@ -72,6 +71,13 @@ var runCommand = cli.Command{
 	},
 }
 
+func sendInitCommand(cmdArray []string, writePipe *os.File) {
+	cmdStr := strings.Join(cmdArray, " ")
+	log.Infof("cmd is %s", cmdStr)
+	writePipe.WriteString(cmdStr)
+	writePipe.Close()
+}
+
 func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
 	parent, writePipe := container.NerParentProcess(tty)
 	if parent == nil {
@@ -79,14 +85,26 @@ func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
 		return
 	}
 
+	// cgroupManager := cgroup.NewCgroupManager("/mydocker")
+	// fmt.Println(cgroupManager)
+	// defer cgroupManager.Destory()
+	// cgroupManager.Apply(parent.Process.Pid)
+	// cgroupManager.Set(resConfig)
+
 	if err := parent.Start(); err != nil {
 		log.Errorf("parent start error %v", err)
 		return
 	}
 
+	sendInitCommand(cmdArray, writePipe)
+	parent.Wait()
+
 	if err := syscall.Unmount("/proc", 0); err != nil {
 		log.Error(err)
 	}
+
+	log.Infof("container process exit")
+	os.Exit(0)
 
 }
 

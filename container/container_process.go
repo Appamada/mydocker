@@ -5,7 +5,7 @@ import (
 	"os/exec"
 	"syscall"
 
-	log "github.com/Sirupsen/logrus"
+	log "github.com/sirupsen/logrus"
 )
 
 func NerParentProcess(tty bool) (*exec.Cmd, *os.File) {
@@ -26,7 +26,7 @@ func NerParentProcess(tty bool) (*exec.Cmd, *os.File) {
 		cmd.Stderr = os.Stderr
 	}
 
-	cmd.ExtraFiles = []*os.File{readPipe}
+	cmd.ExtraFiles = []*os.File{readPipe} //将管道一端传入到容器进程中
 	cmd.Dir = "/root/busybox"
 	return cmd, writePipe
 }
