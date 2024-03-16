@@ -46,7 +46,6 @@ func readUserCommand() []string {
 	}
 
 	msgStr := string(msg)
-	fmt.Println(msgStr)
 
 	return strings.Split(msgStr, " ")
 }

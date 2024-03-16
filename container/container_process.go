@@ -12,6 +12,7 @@ func NerParentProcess(tty bool) (*exec.Cmd, *os.File) {
 	readPipe, writePipe, err := NewPipe()
 	if err != nil {
 		log.Errorf("new pipe error %v", err)
+		return nil, nil
 	}
 
 	cmd := exec.Command("/proc/self/exe", "init")
@@ -27,7 +28,7 @@ func NerParentProcess(tty bool) (*exec.Cmd, *os.File) {
 	}
 
 	cmd.ExtraFiles = []*os.File{readPipe} //将管道一端传入到容器进程中
-	cmd.Dir = "/root/busybox"
+	// cmd.Dir = "/root/busybox" //设置工作目录导致无法找到/proc/self/exe
 	return cmd, writePipe
 }
 

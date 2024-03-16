@@ -13,7 +13,6 @@ func NewCgroupManager(path string) *CgroupManager {
 	manager := &CgroupManager{
 		Path: path,
 	}
-
 	return manager
 }
 
