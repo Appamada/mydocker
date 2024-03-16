@@ -81,7 +81,7 @@ func sendInitCommand(cmdArray []string, writePipe *os.File) {
 func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
 	parent, writePipe := container.NerParentProcess(tty)
 	if parent == nil {
-		log.Errorf("ner parent process error")
+		log.Errorf("new parent process error")
 		return
 	}
 
