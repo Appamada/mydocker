@@ -1,6 +1,6 @@
 package cgroups
 
-import "github.com/Appamada/mydocker/cgroup/subsystem"
+import "github.com/Appamada/mydocker/cgroups/subsystem"
 
 type CgroupManager struct {
 	// cgroup在hierarchy中的路径

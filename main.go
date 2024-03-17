@@ -5,7 +5,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Appamada/mydocker/cgroup/subsystem"
+	"github.com/Appamada/mydocker/cgroups"
+	"github.com/Appamada/mydocker/cgroups/subsystem"
 	"github.com/Appamada/mydocker/container"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
