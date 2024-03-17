@@ -24,7 +24,6 @@ func FindCgroupRootPath(subSystemName string) (string, error) {
 
 		fields := strings.Split(line, " ")
 		for _, opt := range strings.Split(fields[len(fields)-1], ",") {
-			fmt.Println(opt)
 			if opt == subSystemName {
 				return fields[4], nil
 			}
@@ -44,16 +43,16 @@ func GetCgroupPath(subSystemName string, cgroupPath string, autoCreate bool) (st
 		return "", err
 	}
 
-	if _, err := os.Stat(path.Join(cgroupRoot, cgroupPath)); err != nil {
-		if autoCreate {
-			if err := os.Mkdir(path.Join(cgroupRoot, cgroupPath), 0755); err != nil {
-				return "", fmt.Errorf("create cgroup path %s error: %v", cgroupPath, err)
-			}
-			return path.Join(cgroupRoot, cgroupPath), nil
-		} else {
-			return "", fmt.Errorf("cgroup %s does not exist", cgroupPath)
-		}
+	if _, err := os.Stat(path.Join(cgroupRoot, cgroupPath)); err == nil || (autoCreate && os.IsNotExist(err)) {
+		if os.IsNotExist(err) {
+			if err := os.Mkdir(path.Join(cgroupRoot, cgroupPath), 0755); err == nil {
 
+			} else {
+				return "", fmt.Errorf("error create cgroup %v", err)
+			}
+		}
+		return path.Join(cgroupRoot, cgroupPath), nil
+	} else {
+		return "", fmt.Errorf("cgroup path error %v", err)
 	}
-	return path.Join(cgroupRoot, cgroupPath), nil
 }

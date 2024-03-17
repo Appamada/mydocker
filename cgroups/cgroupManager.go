@@ -1,6 +1,11 @@
 package cgroups
 
-import "github.com/Appamada/mydocker/cgroups/subsystem"
+import (
+	"fmt"
+
+	"github.com/Appamada/mydocker/cgroups/subsystem"
+	log "github.com/sirupsen/logrus"
+)
 
 type CgroupManager struct {
 	// cgroup在hierarchy中的路径
@@ -18,7 +23,7 @@ func NewCgroupManager(path string) *CgroupManager {
 func (c *CgroupManager) Apply(pid int) error {
 	for _, sysSysIns := range subsystem.SubsystemsIns {
 		if err := sysSysIns.Apply(c.Path, pid); err != nil {
-			return err
+			return fmt.Errorf("apply sub system %s error: %v", sysSysIns.Name(), err)
 		}
 	}
 	return nil
@@ -27,7 +32,7 @@ func (c *CgroupManager) Apply(pid int) error {
 func (c *CgroupManager) Set(res *subsystem.ResourceConfig) error {
 	for _, sysSysIns := range subsystem.SubsystemsIns {
 		if err := sysSysIns.Set(c.Path, res); err != nil {
-			return err
+			return fmt.Errorf("set sub system %s error: %v", sysSysIns.Name(), err)
 		}
 	}
 	return nil
@@ -36,7 +41,7 @@ func (c *CgroupManager) Set(res *subsystem.ResourceConfig) error {
 func (c *CgroupManager) Destory() error {
 	for _, sysSysIns := range subsystem.SubsystemsIns {
 		if err := sysSysIns.Remove(c.Path); err != nil {
-			return err
+			log.Warnf("remove cgroup fail %v", err)
 		}
 	}
 	return nil

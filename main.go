@@ -92,10 +92,17 @@ func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
 
 	cgroupManager := cgroups.NewCgroupManager("mydocker-cgroup")
 	defer cgroupManager.Destory()
-	cgroupManager.Set(resConfig)
-	cgroupManager.Apply(parent.Process.Pid)
+
+	if err := cgroupManager.Set(resConfig); err != nil {
+		log.Errorf("set cgroup error %v", err)
+	}
+
+	if err := cgroupManager.Apply(parent.Process.Pid); err != nil {
+		log.Errorf("apply cgroup error %v", err)
+	}
 
 	sendInitCommand(cmdArray, writePipe)
+
 	parent.Wait()
 
 	// if err := syscall.Unmount("/proc", 0); err != nil {
