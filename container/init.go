@@ -84,15 +84,19 @@ func pivotRoot(root string) error {
 		return fmt.Errorf("mount rootfs to itself error: %v", err)
 	}
 
+	// 创建 rootfs/.pivot_root 存储 old_root
 	pivotDir := filepath.Join(root, ".pivot_root")
 	if err := os.Mkdir(pivotDir, 0777); err != nil {
 		return fmt.Errorf("mkdir .pivot_root error: %v", err)
 	}
 
+	// pivot_root 到新的rootfs, 老的 old_root挂载在rootfs/.pivot_root
+	// 挂载点现在依然可以在mount命令中看到
 	if err := syscall.PivotRoot(root, pivotDir); err != nil {
 		return fmt.Errorf("pivot_root error: %v", err)
 	}
 
+	// 修改当前的工作目录到根目录
 	if err := syscall.Chdir("/"); err != nil {
 		return fmt.Errorf("chdir / error: %v", err)
 	}
