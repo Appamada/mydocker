@@ -6,7 +6,6 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/Appamada/mydocker/cgroup"
 	"github.com/Appamada/mydocker/cgroup/subsystem"
 	"github.com/Appamada/mydocker/container"
 	log "github.com/sirupsen/logrus"
@@ -91,10 +90,10 @@ func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
 		log.Errorf("parent start error %v", err)
 	}
 
-	cgroupManager := cgroup.NewCgroupManager("mydocker-cgroup")
-	defer cgroupManager.Destory()
-	cgroupManager.Apply(parent.Process.Pid)
-	cgroupManager.Set(resConfig)
+	// cgroupManager := cgroup.NewCgroupManager("mydocker-cgroup")
+	// defer cgroupManager.Destory()
+	// cgroupManager.Set(resConfig)
+	// cgroupManager.Apply(parent.Process.Pid)
 
 	sendInitCommand(cmdArray, writePipe)
 	parent.Wait()

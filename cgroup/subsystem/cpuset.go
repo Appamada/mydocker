@@ -12,10 +12,10 @@ import (
 type CpuSetSubSystem struct {
 }
 
-func (c *CpuSetSubSystem) Apply(cgorupPath string, Pid int) error {
-	subSystenCgoupPath, err := util.GetCgroupPath(c.Name(), cgorupPath, true)
+func (c *CpuSetSubSystem) Apply(cgroupPath string, Pid int) error {
+	subSystenCgoupPath, err := util.GetCgroupPath(c.Name(), cgroupPath, true)
 	if err != nil {
-		return fmt.Errorf("get cgroup %s error: %v", cgorupPath, err)
+		return fmt.Errorf("get cgroup %s error: %v", cgroupPath, err)
 	}
 
 	if err := os.WriteFile(path.Join(subSystenCgoupPath, "tasks"), []byte(strconv.Itoa(Pid)), 0644); err != nil {
@@ -25,10 +25,10 @@ func (c *CpuSetSubSystem) Apply(cgorupPath string, Pid int) error {
 	return nil
 }
 
-func (c *CpuSetSubSystem) Set(cgorupPath string, res *ResourceConfig) error {
-	subSystenCgoupPath, err := util.GetCgroupPath(c.Name(), cgorupPath, true)
+func (c *CpuSetSubSystem) Set(cgroupPath string, res *ResourceConfig) error {
+	subSystenCgoupPath, err := util.GetCgroupPath(c.Name(), cgroupPath, true)
 	if err != nil {
-		return fmt.Errorf("get cgroup %s error: %v", cgorupPath, err)
+		return fmt.Errorf("get cgroup %s error: %v", cgroupPath, err)
 	}
 
 	if err := os.WriteFile(path.Join(subSystenCgoupPath, "cpuset.cpus"), []byte(res.CpuShare), 0644); err != nil {
@@ -37,14 +37,14 @@ func (c *CpuSetSubSystem) Set(cgorupPath string, res *ResourceConfig) error {
 	return nil
 }
 
-func (c *CpuSetSubSystem) Remove(cgorupPath string) error {
-	subSystenCgoupPath, err := util.GetCgroupPath(c.Name(), cgorupPath, true)
+func (c *CpuSetSubSystem) Remove(cgroupPath string) error {
+	subSystenCgoupPath, err := util.GetCgroupPath(c.Name(), cgroupPath, true)
 	if err != nil {
-		return fmt.Errorf("get cgroup %s error: %v", cgorupPath, err)
+		return fmt.Errorf("get cgroup %s error: %v", cgroupPath, err)
 	}
 
 	if err := os.RemoveAll(subSystenCgoupPath); err != nil {
-		return fmt.Errorf("remove cgroup %s error: %v", cgorupPath, err)
+		return fmt.Errorf("remove cgroup %s error: %v", cgroupPath, err)
 	}
 
 	return nil

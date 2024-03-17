@@ -12,10 +12,10 @@ import (
 type MemorySubSystem struct {
 }
 
-func (m *MemorySubSystem) Apply(cgorupPath string, Pid int) error {
-	subSystenCgoupPath, err := util.GetCgroupPath(m.Name(), cgorupPath, true)
+func (m *MemorySubSystem) Apply(cgroupPath string, Pid int) error {
+	subSystenCgoupPath, err := util.GetCgroupPath(m.Name(), cgroupPath, true)
 	if err != nil {
-		return fmt.Errorf("get cgroup %s error: %v", cgorupPath, err)
+		return fmt.Errorf("get cgroup %s error: %v", cgroupPath, err)
 	}
 
 	if err := os.WriteFile(path.Join(subSystenCgoupPath, "tasks"), []byte(strconv.Itoa(Pid)), 0644); err != nil {
@@ -25,10 +25,10 @@ func (m *MemorySubSystem) Apply(cgorupPath string, Pid int) error {
 	return nil
 }
 
-func (m *MemorySubSystem) Set(cgorupPath string, res *ResourceConfig) error {
-	subSystenCgoupPath, err := util.GetCgroupPath(m.Name(), cgorupPath, true)
+func (m *MemorySubSystem) Set(cgroupPath string, res *ResourceConfig) error {
+	subSystenCgoupPath, err := util.GetCgroupPath(m.Name(), cgroupPath, true)
 	if err != nil {
-		return fmt.Errorf("get cgroup %s error: %v", cgorupPath, err)
+		return fmt.Errorf("get cgroup %s error: %v", cgroupPath, err)
 	}
 
 	if err := os.WriteFile(path.Join(subSystenCgoupPath, "memory.limit_in_bytes"), []byte(res.MemoryLimit), 0644); err != nil {
@@ -37,14 +37,14 @@ func (m *MemorySubSystem) Set(cgorupPath string, res *ResourceConfig) error {
 	return nil
 }
 
-func (m *MemorySubSystem) Remove(cgorupPath string) error {
-	subSystenCgoupPath, err := util.GetCgroupPath(m.Name(), cgorupPath, true)
+func (m *MemorySubSystem) Remove(cgroupPath string) error {
+	subSystenCgoupPath, err := util.GetCgroupPath(m.Name(), cgroupPath, true)
 	if err != nil {
-		return fmt.Errorf("get cgroup %s error: %v", cgorupPath, err)
+		return fmt.Errorf("get cgroup %s error: %v", cgroupPath, err)
 	}
 
 	if err := os.RemoveAll(subSystenCgoupPath); err != nil {
-		return fmt.Errorf("remove cgroup %s error: %v", cgorupPath, err)
+		return fmt.Errorf("remove cgroup %s error: %v", cgroupPath, err)
 	}
 
 	return nil
