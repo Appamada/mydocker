@@ -57,7 +57,11 @@ func setMount() {
 	}
 
 	log.Infof("current work dir is %s", pwd)
-	pivotRoot(pwd)
+
+	if err := pivotRoot(pwd); err != nil {
+		log.Errorf("pivot root error %v", err)
+		return
+	}
 
 	//mount proc
 	defaultMountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
@@ -68,6 +72,14 @@ func setMount() {
 }
 
 func pivotRoot(root string) error {
+	// systemd 加入linux之后, mount namespace 就变成 shared by default, 必须显式声明新的mount namespace独立。
+	err := syscall.Mount("", "/", "", syscall.MS_PRIVATE|syscall.MS_REC, "")
+	if err != nil {
+		return err
+	}
+
+	// 重新mount root
+	// bind mount：将相同内容换挂载点
 	if err := syscall.Mount(root, root, "bind", syscall.MS_BIND|syscall.MS_REC, ""); err != nil {
 		return fmt.Errorf("mount rootfs to itself error: %v", err)
 	}
