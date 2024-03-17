@@ -73,7 +73,7 @@ func pivotRoot(root string) error {
 	}
 
 	pivotDir := filepath.Join(root, ".pivot_root")
-	if err := os.Mkdir(pivotDir, 0600); err != nil {
+	if err := os.Mkdir(pivotDir, 0777); err != nil {
 		return fmt.Errorf("mkdir .pivot_root error: %v", err)
 	}
 
@@ -81,15 +81,16 @@ func pivotRoot(root string) error {
 		return fmt.Errorf("pivot_root error: %v", err)
 	}
 
-	if err := os.Chdir("/"); err != nil {
+	if err := syscall.Chdir("/"); err != nil {
 		return fmt.Errorf("chdir / error: %v", err)
 	}
 
 	pivotDir = filepath.Join("/", ".pivot_root")
 
+	//umount rootfs/.pivot_root
 	if err := syscall.Unmount(pivotDir, syscall.MNT_DETACH); err != nil {
 		return fmt.Errorf("unmount .pivot_root error: %v", err)
 	}
-
+	// 删除临时文件夹
 	return os.Remove(pivotDir)
 }
