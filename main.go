@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"syscall"
 
 	"github.com/Appamada/mydocker/cgroup/subsystem"
 	"github.com/Appamada/mydocker/container"
@@ -90,20 +89,20 @@ func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
 		log.Errorf("parent start error %v", err)
 	}
 
-	// cgroupManager := cgroup.NewCgroupManager("mydocker-cgroup")
-	// defer cgroupManager.Destory()
-	// cgroupManager.Set(resConfig)
-	// cgroupManager.Apply(parent.Process.Pid)
+	cgroupManager := cgroups.NewCgroupManager("mydocker-cgroup")
+	defer cgroupManager.Destory()
+	cgroupManager.Set(resConfig)
+	cgroupManager.Apply(parent.Process.Pid)
 
 	sendInitCommand(cmdArray, writePipe)
 	parent.Wait()
 
-	if err := syscall.Unmount("/proc", 0); err != nil {
-		log.Error(err)
-	}
+	// if err := syscall.Unmount("/proc", 0); err != nil {
+	// 	log.Error(err)
+	// }
 
-	log.Infof("container process exit")
-	os.Exit(0)
+	// log.Infof("container process exit")
+	// os.Exit(0)
 
 }
 
