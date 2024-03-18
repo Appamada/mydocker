@@ -17,8 +17,8 @@ func sendInitCommand(cmdArray []string, writePipe *os.File) {
 	writePipe.Close()
 }
 
-func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
-	parent, writePipe := container.NerParentProcess(tty)
+func Run(tty bool, cmdArray []string, volume string, resConfig *subsystem.ResourceConfig) {
+	parent, writePipe := container.NerParentProcess(tty, volume)
 
 	if parent == nil {
 		log.Errorf("new parent process error")
@@ -36,10 +36,7 @@ func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
 		log.Errorf("set cgroup error %v", err)
 	}
 
-	if err := cgroupManager.Apply(parent.Process.Pid); err != nil {
-		log.Errorf("apply cgroup error %v", err)
-	}
-
+	cgroupManager.Apply(parent.Process.Pid)
 	sendInitCommand(cmdArray, writePipe)
 
 	if tty {
@@ -47,7 +44,7 @@ func Run(tty bool, cmdArray []string, resConfig *subsystem.ResourceConfig) {
 			log.Errorf("parent wait error %v", err)
 		}
 
-		container.DeleteWorkSpace(container.RootURL, container.MntURL)
+		container.DeleteWorkSpace(container.RootURL, container.MntURL, volume)
 	}
 
 	// if err := syscall.Unmount("/proc", 0); err != nil {

@@ -1,8 +1,6 @@
 package cgroups
 
 import (
-	"fmt"
-
 	"github.com/Appamada/mydocker/cgroups/subsystem"
 	log "github.com/sirupsen/logrus"
 )
@@ -23,7 +21,7 @@ func NewCgroupManager(path string) *CgroupManager {
 func (c *CgroupManager) Apply(pid int) error {
 	for _, sysSysIns := range subsystem.SubsystemsIns {
 		if err := sysSysIns.Apply(c.Path, pid); err != nil {
-			return fmt.Errorf("apply sub system %s error: %v", sysSysIns.Name(), err)
+			return err
 		}
 	}
 	return nil
@@ -32,7 +30,7 @@ func (c *CgroupManager) Apply(pid int) error {
 func (c *CgroupManager) Set(res *subsystem.ResourceConfig) error {
 	for _, sysSysIns := range subsystem.SubsystemsIns {
 		if err := sysSysIns.Set(c.Path, res); err != nil {
-			return fmt.Errorf("set sub system %s error: %v", sysSysIns.Name(), err)
+			return err
 		}
 	}
 	return nil

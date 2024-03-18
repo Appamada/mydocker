@@ -33,6 +33,10 @@ var runCommand = cli.Command{
 			Usage: "enable tty",
 		},
 		cli.StringFlag{
+			Name:  "v",
+			Usage: "set volume, like: -v /tmp",
+		},
+		cli.StringFlag{
 			Name:  "m",
 			Usage: "memory limit",
 		},
@@ -56,6 +60,7 @@ var runCommand = cli.Command{
 		}
 
 		tty := context.Bool("ti")
+		volume := context.String("v")
 
 		resConf := &subsystem.ResourceConfig{
 			MemoryLimit: context.String("m"),
@@ -63,7 +68,7 @@ var runCommand = cli.Command{
 			CpuSet:      context.String("cpuset"),
 		}
 
-		Run(tty, cmdArray, resConf)
+		Run(tty, cmdArray, volume, resConf)
 		return nil
 	},
 }
