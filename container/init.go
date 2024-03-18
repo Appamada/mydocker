@@ -92,6 +92,8 @@ func pivotRoot(root string) error {
 
 	// pivot_root 到新的rootfs, 老的 old_root挂载在rootfs/.pivot_root
 	// 挂载点现在依然可以在mount命令中看到
+	// https://man7.org/linux/man-pages/man2/pivot_root.2.html
+	// func PivotRoot(newroot string, putold string) (err error)
 	if err := syscall.PivotRoot(root, pivotDir); err != nil {
 		return fmt.Errorf("pivot_root error: %v", err)
 	}

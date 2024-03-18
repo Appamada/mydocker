@@ -17,7 +17,7 @@ func sendInitCommand(cmdArray []string, writePipe *os.File) {
 	writePipe.Close()
 }
 
-func Run(tty bool, cmdArray []string, volume string, resConfig *subsystem.ResourceConfig) {
+func Run(containerName string, tty bool, cmdArray []string, volume string, resConfig *subsystem.ResourceConfig) {
 	parent, writePipe := container.NerParentProcess(tty, volume)
 
 	if parent == nil {
@@ -28,6 +28,8 @@ func Run(tty bool, cmdArray []string, volume string, resConfig *subsystem.Resour
 	if err := parent.Start(); err != nil {
 		log.Errorf("parent start error %v", err)
 	}
+
+	container.ContainerInfoRecord(containerName, parent.Process.Pid, cmdArray)
 
 	cgroupManager := cgroups.NewCgroupManager("mydocker-cgroup")
 	defer cgroupManager.Destory()
@@ -45,6 +47,7 @@ func Run(tty bool, cmdArray []string, volume string, resConfig *subsystem.Resour
 		}
 
 		container.DeleteWorkSpace(container.RootURL, container.MntURL, volume)
+		container.ContainerInfoDelete(containerName)
 	}
 
 	// if err := syscall.Unmount("/proc", 0); err != nil {

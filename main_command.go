@@ -66,6 +66,10 @@ var runCommand = cli.Command{
 			Name:  "cpuset",
 			Usage: "cpuset limit",
 		},
+		cli.StringFlag{
+			Name:  "name",
+			Usage: "container name",
+		},
 	},
 	Action: func(context *cli.Context) error {
 		if len(context.Args()) < 1 {
@@ -85,6 +89,7 @@ var runCommand = cli.Command{
 		}
 
 		volume := context.String("v")
+		containerName := context.String("name")
 
 		resConf := &subsystem.ResourceConfig{
 			MemoryLimit: context.String("m"),
@@ -92,7 +97,7 @@ var runCommand = cli.Command{
 			CpuSet:      context.String("cpuset"),
 		}
 
-		Run(tty, cmdArray, volume, resConf)
+		Run(containerName, tty, cmdArray, volume, resConf)
 		return nil
 	},
 }

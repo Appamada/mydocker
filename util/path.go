@@ -18,7 +18,7 @@ func PathExists(path string) (bool, error) {
 }
 
 func PathCreate(path string) {
-	if err := os.Mkdir(path, 0777); err != nil {
+	if err := os.MkdirAll(path, 0777); err != nil {
 		log.Errorf("create dir %s error %v", path, err)
 	} else {
 		log.Infof("parent dir %s already done", path)
