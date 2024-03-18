@@ -101,3 +101,12 @@ var runCommand = cli.Command{
 		return nil
 	},
 }
+
+var listCommand = cli.Command{
+	Name:  "ps",
+	Usage: "list the info about containers",
+	Action: func(context *cli.Context) error {
+		container.ContainerRecordList()
+		return nil
+	},
+}

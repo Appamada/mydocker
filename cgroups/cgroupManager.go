@@ -40,6 +40,7 @@ func (c *CgroupManager) Destory() error {
 	for _, sysSysIns := range subsystem.SubsystemsIns {
 		if err := sysSysIns.Remove(c.Path); err != nil {
 			log.Warnf("remove cgroup fail %v", err)
+			return err
 		}
 	}
 	return nil
