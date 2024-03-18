@@ -21,9 +21,9 @@ func TestFindCgroupRootPath(t *testing.T) {
 	}
 }
 
-func Testutil.GetCgroupPath(t *testing.T) {
+func TestGetCgroupPath(t *testing.T) {
 	for _, subSysSubSystemName := range subSystemNameIns {
-		path, err := util.GetCgroupPath(subSysSubSystemName, "myTest", true)
+		path, err := GetCgroupPath(subSysSubSystemName, "myTest", true)
 		fmt.Println(path)
 		require.NoError(t, err)
 	}

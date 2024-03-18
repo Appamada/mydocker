@@ -13,5 +13,4 @@ func CommitImage(imageName string) {
 	if _, err := exec.Command("tar", "czvf", imageTar, "-C", MntURL, ".").CombinedOutput(); err != nil {
 		log.Errorf("tar error %v", err)
 	}
-
 }

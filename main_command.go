@@ -46,6 +46,10 @@ var runCommand = cli.Command{
 			Name:  "ti",
 			Usage: "enable tty",
 		},
+		cli.BoolFlag{
+			Name:  "d",
+			Usage: "detach container process",
+		},
 		cli.StringFlag{
 			Name:  "v",
 			Usage: "set volume, like: -v /tmp",
@@ -73,7 +77,13 @@ var runCommand = cli.Command{
 			cmdArray = append(cmdArray, arg)
 		}
 
+		detach := context.Bool("d")
 		tty := context.Bool("ti")
+
+		if detach && tty {
+			return fmt.Errorf("it is not allowed to use tty and detach at the same time")
+		}
+
 		volume := context.String("v")
 
 		resConf := &subsystem.ResourceConfig{
