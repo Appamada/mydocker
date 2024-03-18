@@ -23,6 +23,20 @@ var initCommand = cli.Command{
 	},
 }
 
+var commitCommand = cli.Command{
+	Name:  "commit",
+	Usage: "commit container into image",
+	Action: func(context *cli.Context) error {
+		if len(context.Args()) < 1 {
+			return fmt.Errorf("missing container id")
+		}
+
+		imageName := context.Args().Get(0)
+		container.CommitImage(imageName)
+		return nil
+	},
+}
+
 var runCommand = cli.Command{
 	Name: "run",
 	Usage: `Create a container with namespace and cgroups limit

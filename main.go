@@ -14,6 +14,7 @@ func main() {
 
 	app.Commands = []cli.Command{
 		initCommand,
+		commitCommand,
 		runCommand,
 	}
 
