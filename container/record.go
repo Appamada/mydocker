@@ -16,8 +16,9 @@ import (
 )
 
 var (
-	DefaultConfigRootPath = "/var/run/containerInfo"
-	DefaultConfigName     = "config.json"
+	DefaultContainerRootPath = "/var/run/containerInfo"
+	DefaultConfigName        = "config.json"
+	DefaultLogName           = "container.log"
 
 	RUNNING string = "running"
 	STOP    string = "stopped"
@@ -36,7 +37,7 @@ type containerInfo struct {
 func getContainerInfo(file fs.FileInfo) (*containerInfo, error) {
 	containerName := file.Name()
 
-	configFilePath := fmt.Sprint(DefaultConfigRootPath + "/" + containerName + "/" + DefaultConfigName)
+	configFilePath := fmt.Sprint(DefaultContainerRootPath + "/" + containerName + "/" + DefaultConfigName)
 
 	content, err := ioutil.ReadFile(configFilePath)
 
@@ -55,7 +56,7 @@ func getContainerInfo(file fs.FileInfo) (*containerInfo, error) {
 }
 
 func ContainerRecordList() {
-	configPath := fmt.Sprint(DefaultConfigRootPath)
+	configPath := fmt.Sprint(DefaultContainerRootPath)
 
 	files, err := ioutil.ReadDir(configPath)
 	if err != nil {
@@ -97,29 +98,19 @@ func ContainerRecordList() {
 }
 
 func ContainerInfoDelete(name string) {
-	configPath := fmt.Sprint(DefaultConfigRootPath + "/" + name)
+	configPath := fmt.Sprint(DefaultContainerRootPath + "/" + name)
 	if err := os.RemoveAll(configPath); err != nil {
 		log.Errorf("remove %s error %v", configPath, err)
 	}
 }
 
-func ContainerInfoRecord(name string, pid int, cmdArray []string) {
-
-	var containerName string
+func ContainerInfoRecord(name string, id string, pid int, cmdArray []string) {
 
 	command := strings.Join(cmdArray, "")
 
-	id := util.RandomString(10)
-
-	if name != "" {
-		containerName = name
-	} else {
-		containerName = id
-	}
-
 	info := &containerInfo{
 		ID:          id,
-		Name:        containerName,
+		Name:        name,
 		Pid:         strconv.Itoa(pid),
 		Status:      RUNNING,
 		Cmd:         command,
@@ -133,7 +124,7 @@ func ContainerInfoRecord(name string, pid int, cmdArray []string) {
 
 	jsonStr := string(jsonBytes)
 
-	configPath := fmt.Sprintf(DefaultConfigRootPath + "/" + containerName)
+	configPath := fmt.Sprintf(DefaultContainerRootPath + "/" + name)
 	exist, err := util.PathExists(configPath)
 
 	if err != nil {

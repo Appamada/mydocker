@@ -7,6 +7,7 @@ import (
 	"github.com/Appamada/mydocker/cgroups"
 	"github.com/Appamada/mydocker/cgroups/subsystem"
 	"github.com/Appamada/mydocker/container"
+	"github.com/Appamada/mydocker/util"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -18,7 +19,16 @@ func sendInitCommand(cmdArray []string, writePipe *os.File) {
 }
 
 func Run(containerName string, tty bool, cmdArray []string, volume string, resConfig *subsystem.ResourceConfig) {
-	parent, writePipe := container.NerParentProcess(tty, volume)
+	var name string
+	id := util.RandomString(10)
+
+	if name != "" {
+		name = containerName
+	} else {
+		name = id
+	}
+
+	parent, writePipe := container.NerParentProcess(tty, volume, name)
 
 	if parent == nil {
 		log.Errorf("new parent process error")
@@ -29,7 +39,7 @@ func Run(containerName string, tty bool, cmdArray []string, volume string, resCo
 		log.Errorf("parent start error %v", err)
 	}
 
-	container.ContainerInfoRecord(containerName, parent.Process.Pid, cmdArray)
+	container.ContainerInfoRecord(name, id, parent.Process.Pid, cmdArray)
 
 	cgroupManager := cgroups.NewCgroupManager("mydocker-cgroup")
 	defer cgroupManager.Destory()
@@ -47,7 +57,7 @@ func Run(containerName string, tty bool, cmdArray []string, volume string, resCo
 		}
 
 		container.DeleteWorkSpace(container.RootURL, container.MntURL, volume)
-		container.ContainerInfoDelete(containerName)
+		container.ContainerInfoDelete(name)
 	}
 
 	// if err := syscall.Unmount("/proc", 0); err != nil {

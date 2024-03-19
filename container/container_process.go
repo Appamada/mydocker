@@ -1,6 +1,7 @@
 package container
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"syscall"
@@ -16,7 +17,7 @@ var (
 	RootURL = "/root"
 )
 
-func NerParentProcess(tty bool, volume string) (*exec.Cmd, *os.File) {
+func NerParentProcess(tty bool, volume string, containerName string) (*exec.Cmd, *os.File) {
 	readPipe, writePipe, err := NewPipe() //0，1，err
 	if err != nil {
 		log.Errorf("new pipe error %v", err)
@@ -29,10 +30,33 @@ func NerParentProcess(tty bool, volume string) (*exec.Cmd, *os.File) {
 			syscall.CLONE_NEWNET | syscall.CLONE_NEWIPC,
 	}
 
+	//写入日志文件
+	containerRootPath := fmt.Sprint(DefaultContainerRootPath + "/" + containerName)
+	fmt.Println(containerRootPath)
+
+	exist, err := util.PathExists(containerRootPath)
+	if err != nil {
+		log.Errorf("check dir %s error %v", containerRootPath, err)
+	}
+	if !exist {
+		util.PathCreate(containerRootPath)
+	}
+
+	stdLogFilePath := fmt.Sprintf(containerRootPath + "/" + DefaultLogName)
+	fmt.Println(stdLogFilePath)
+
+	file, err := os.Create(stdLogFilePath)
+	if err != nil {
+		log.Errorf("create file %s error %v", stdLogFilePath, err)
+	}
+
 	if tty {
 		cmd.Stdin = os.Stdin
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
+	} else {
+		cmd.Stderr = file
+		cmd.Stdout = file
 	}
 
 	cmd.ExtraFiles = []*os.File{readPipe} //将管道一端传入到容器进程中,容器进程接收数据
