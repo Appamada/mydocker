@@ -18,17 +18,14 @@ func sendInitCommand(cmdArray []string, writePipe *os.File) {
 	writePipe.Close()
 }
 
-func Run(containerName string, tty bool, cmdArray []string, volume string, resConfig *subsystem.ResourceConfig, envArray []string) {
-	var name string
+func Run(containerName string, tty bool, cmdArray []string, volume string, resConfig *subsystem.ResourceConfig, envSlice []string) {
 	id := util.RandomString(10)
 
-	if name != "" {
-		name = containerName
-	} else {
-		name = id
+	if containerName == "" {
+		containerName = id
 	}
 
-	parent, writePipe := container.NerParentProcess(tty, volume, &name, envArray)
+	parent, writePipe := container.NerParentProcess(tty, volume, &containerName, envSlice)
 
 	if parent == nil {
 		log.Errorf("new parent process error")
@@ -39,7 +36,7 @@ func Run(containerName string, tty bool, cmdArray []string, volume string, resCo
 		log.Errorf("parent start error %v", err)
 	}
 
-	container.ContainerInfoRecord(name, &id, parent.Process.Pid, cmdArray)
+	container.ContainerInfoRecord(containerName, &id, parent.Process.Pid, cmdArray)
 
 	cgroupManager := cgroups.NewCgroupManager("mydocker-cgroup")
 	defer cgroupManager.Destory()
@@ -57,7 +54,7 @@ func Run(containerName string, tty bool, cmdArray []string, volume string, resCo
 		}
 
 		container.DeleteWorkSpace(container.RootURL, container.MntURL, volume)
-		container.ContainerInfoDelete(name)
+		container.ContainerInfoDelete(containerName)
 	}
 
 	// if err := syscall.Unmount("/proc", 0); err != nil {

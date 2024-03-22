@@ -2,11 +2,14 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/Appamada/mydocker/cgroups/subsystem"
 	"github.com/Appamada/mydocker/container"
 	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli"
+
+	_ "github.com/Appamada/mydocker/nsenter"
 )
 
 const usage = `mydocker is a simple container runtime implementation.
@@ -33,6 +36,41 @@ var commitCommand = cli.Command{
 
 		imageName := context.Args().Get(0)
 		container.CommitImage(imageName)
+		return nil
+	},
+}
+
+const ENV_EXEC_PID = "container_pid"
+const ENV_EXEC_CMD = "container_command"
+
+var execCommand = cli.Command{
+	Name:  "exec",
+	Usage: "execute a command in container",
+	// Flags: []cli.Flag{
+	// 	cli.BoolFlag{
+	// 		Name:  "ti",
+	// 		Usage: "enable tty",
+	// 	},
+	// },
+	Action: func(context *cli.Context) error {
+		if os.Getenv(ENV_EXEC_PID) != "" {
+			log.Infof("pid callback pid %s", os.Getgid())
+			return nil
+		}
+
+		if len(context.Args()) < 2 {
+			log.Errorf("missing container id or command")
+			return nil
+		}
+
+		var cmdSlice []string
+		for _, cmd := range context.Args().Tail() {
+			cmdSlice = append(cmdSlice, cmd)
+		}
+
+		containerName := context.Args().Get(0)
+
+		container.ExecContainer(containerName, cmdSlice)
 		return nil
 	},
 }
