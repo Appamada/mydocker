@@ -26,6 +26,20 @@ var initCommand = cli.Command{
 	},
 }
 
+var stopCommand = cli.Command{
+	Name:  "stop",
+	Usage: "stop a running container",
+	Action: func(context *cli.Context) error {
+		if len(context.Args()) < 1 {
+			return fmt.Errorf("missing container id")
+		}
+
+		containerName := context.Args().Get(0)
+		container.StopContainer(containerName)
+		return nil
+	},
+}
+
 var commitCommand = cli.Command{
 	Name:  "commit",
 	Usage: "commit container into image",
