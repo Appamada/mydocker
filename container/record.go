@@ -104,12 +104,12 @@ func ContainerInfoDelete(name string) {
 	}
 }
 
-func ContainerInfoRecord(name string, id string, pid int, cmdArray []string) {
+func ContainerInfoRecord(name string, id *string, pid int, cmdArray []string) {
 
 	command := strings.Join(cmdArray, "")
 
 	info := &containerInfo{
-		ID:          id,
+		ID:          *id,
 		Name:        name,
 		Pid:         strconv.Itoa(pid),
 		Status:      RUNNING,

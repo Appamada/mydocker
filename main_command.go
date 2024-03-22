@@ -50,6 +50,10 @@ var runCommand = cli.Command{
 			Name:  "d",
 			Usage: "detach container process",
 		},
+		cli.StringSliceFlag{
+			Name:  "e",
+			Usage: "set environment variables, like: -e LANG=zh_CN.UTF-8",
+		},
 		cli.StringFlag{
 			Name:  "v",
 			Usage: "set volume, like: -v /tmp",
@@ -88,6 +92,7 @@ var runCommand = cli.Command{
 			return fmt.Errorf("it is not allowed to use tty and detach at the same time")
 		}
 
+		envSlice := context.StringSlice("e")
 		volume := context.String("v")
 		containerName := context.String("name")
 
@@ -97,7 +102,7 @@ var runCommand = cli.Command{
 			CpuSet:      context.String("cpuset"),
 		}
 
-		Run(containerName, tty, cmdArray, volume, resConf)
+		Run(containerName, tty, cmdArray, volume, resConf, envSlice)
 		return nil
 	},
 }

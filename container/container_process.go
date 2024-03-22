@@ -17,7 +17,7 @@ var (
 	RootURL = "/root"
 )
 
-func NerParentProcess(tty bool, volume string, containerName string) (*exec.Cmd, *os.File) {
+func NerParentProcess(tty bool, volume string, containerName *string, envSlice []string) (*exec.Cmd, *os.File) {
 	readPipe, writePipe, err := NewPipe() //0，1，err
 	if err != nil {
 		log.Errorf("new pipe error %v", err)
@@ -31,7 +31,7 @@ func NerParentProcess(tty bool, volume string, containerName string) (*exec.Cmd,
 	}
 
 	//写入日志文件
-	containerRootPath := fmt.Sprint(DefaultContainerRootPath + "/" + containerName)
+	containerRootPath := fmt.Sprint(DefaultContainerRootPath + "/" + *containerName)
 	fmt.Println(containerRootPath)
 
 	exist, err := util.PathExists(containerRootPath)
@@ -60,6 +60,7 @@ func NerParentProcess(tty bool, volume string, containerName string) (*exec.Cmd,
 	}
 
 	cmd.ExtraFiles = []*os.File{readPipe} //将管道一端传入到容器进程中,容器进程接收数据
+	cmd.Env = append(os.Environ(), envSlice...)
 
 	NewWorkSapce(RootURL, MntURL, volume)
 	cmd.Dir = MntURL //设置工作目录且工作目录为空，导致无法找到/proc/self/exe。增加一个镜像tar包解决

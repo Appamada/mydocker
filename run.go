@@ -18,7 +18,7 @@ func sendInitCommand(cmdArray []string, writePipe *os.File) {
 	writePipe.Close()
 }
 
-func Run(containerName string, tty bool, cmdArray []string, volume string, resConfig *subsystem.ResourceConfig) {
+func Run(containerName string, tty bool, cmdArray []string, volume string, resConfig *subsystem.ResourceConfig, envArray []string) {
 	var name string
 	id := util.RandomString(10)
 
@@ -28,7 +28,7 @@ func Run(containerName string, tty bool, cmdArray []string, volume string, resCo
 		name = id
 	}
 
-	parent, writePipe := container.NerParentProcess(tty, volume, name)
+	parent, writePipe := container.NerParentProcess(tty, volume, &name, envArray)
 
 	if parent == nil {
 		log.Errorf("new parent process error")
@@ -39,7 +39,7 @@ func Run(containerName string, tty bool, cmdArray []string, volume string, resCo
 		log.Errorf("parent start error %v", err)
 	}
 
-	container.ContainerInfoRecord(name, id, parent.Process.Pid, cmdArray)
+	container.ContainerInfoRecord(name, &id, parent.Process.Pid, cmdArray)
 
 	cgroupManager := cgroups.NewCgroupManager("mydocker-cgroup")
 	defer cgroupManager.Destory()
