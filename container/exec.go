@@ -3,7 +3,6 @@ package container
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -18,7 +17,7 @@ func GetContainerPid(containerName string) (string, error) {
 	configDirPath := fmt.Sprintf(DefaultContainerRootPath + "/" + containerName)
 	configFilePath := configDirPath + "/" + DefaultConfigName
 
-	contentBytes, err := ioutil.ReadFile(configFilePath)
+	contentBytes, err := os.ReadFile(configFilePath)
 	if err != nil {
 		log.Errorf("read file %s error %v", configFilePath, err)
 		return "", err

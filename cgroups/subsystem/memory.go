@@ -2,7 +2,6 @@ package subsystem
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"strconv"
@@ -15,7 +14,7 @@ type MemorySubSystem struct {
 
 func (m *MemorySubSystem) Apply(cgroupPath string, Pid int) error {
 	if subsysCgroupPath, err := util.GetCgroupPath(m.Name(), cgroupPath, false); err == nil {
-		if err := ioutil.WriteFile(path.Join(subsysCgroupPath, "tasks"), []byte(strconv.Itoa(Pid)), 0644); err != nil {
+		if err := os.WriteFile(path.Join(subsysCgroupPath, "tasks"), []byte(strconv.Itoa(Pid)), 0644); err != nil {
 			return fmt.Errorf("set cgroup proc fail %v", err)
 		}
 		return nil
@@ -27,7 +26,7 @@ func (m *MemorySubSystem) Apply(cgroupPath string, Pid int) error {
 func (m *MemorySubSystem) Set(cgroupPath string, res *ResourceConfig) error {
 	if subsysCgroupPath, err := util.GetCgroupPath(m.Name(), cgroupPath, true); err == nil {
 		if res.MemoryLimit != "" {
-			if err := ioutil.WriteFile(
+			if err := os.WriteFile(
 				path.Join(subsysCgroupPath, "memory.limit_in_bytes"),
 				[]byte(res.MemoryLimit), 0644); err != nil {
 				return fmt.Errorf("set cgroup memory fail %v", err)

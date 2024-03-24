@@ -3,7 +3,6 @@ package container
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strconv"
 	"syscall"
@@ -33,7 +32,7 @@ func StopContainer(containerName string) {
 	containerDir := fmt.Sprint(DefaultContainerRootPath + "/" + containerName)
 	configFilePath := containerDir + "/" + DefaultConfigName
 
-	byteContent, err := ioutil.ReadFile(configFilePath)
+	byteContent, err := os.ReadFile(configFilePath)
 
 	if err != nil {
 		log.Errorf("read file %s error %v", configFilePath, err)

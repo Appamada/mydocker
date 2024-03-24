@@ -2,7 +2,7 @@ package container
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -38,7 +38,7 @@ func RunContainerInitProcess() error {
 func readUserCommand() []string {
 	pipe := os.NewFile(uintptr(3), "pipe")
 
-	msg, err := ioutil.ReadAll(pipe)
+	msg, err := io.ReadAll(pipe)
 	if err != nil {
 		log.Errorf("read pipe error %v", err)
 		return nil

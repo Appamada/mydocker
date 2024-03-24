@@ -12,10 +12,6 @@ import (
 	_ "github.com/Appamada/mydocker/nsenter"
 )
 
-const usage = `mydocker is a simple container runtime implementation.
-The purpose of this project is to learn how docker works and how to write a docker by ourselves
-Enjoy it, just for fun.`
-
 var initCommand = cli.Command{
 	Name:  "init",
 	Usage: "Init container process run user's process in container. Do not call it outside",
@@ -36,6 +32,20 @@ var stopCommand = cli.Command{
 
 		containerName := context.Args().Get(0)
 		container.StopContainer(containerName)
+		return nil
+	},
+}
+
+var rmCommand = cli.Command{
+	Name:  "rm",
+	Usage: "remove unused containers which is in stopped state",
+	Action: func(context *cli.Context) error {
+		if len(context.Args()) < 1 {
+			return fmt.Errorf("missing container id")
+		}
+
+		containerName := context.Args().Get(0)
+		container.RmContainer(containerName)
 		return nil
 	},
 }
