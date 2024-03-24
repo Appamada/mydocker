@@ -1,7 +1,6 @@
 package container
 
 import (
-	"encoding/json"
 	"fmt"
 	"os"
 
@@ -10,17 +9,10 @@ import (
 
 func RmContainer(containerName string) error {
 	configDirPath := fmt.Sprintf(DefaultContainerRootPath + "/" + containerName)
-	configFilePath := configDirPath + "/" + DefaultConfigName
 
-	byteContent, err := os.ReadFile(configFilePath)
+	containerInfo, err := getContainerInfoByName(containerName)
 	if err != nil {
-		log.Errorf("read file %s error %v", configFilePath, err)
-		return err
-	}
-
-	var containerInfo containerInfo
-	if err := json.Unmarshal(byteContent, &containerInfo); err != nil {
-		log.Errorf("unmarshal file %s error %v", configFilePath, err)
+		log.Errorf("get container %s info error %v", containerName, err)
 		return err
 	}
 

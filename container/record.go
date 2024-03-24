@@ -34,7 +34,27 @@ type containerInfo struct {
 	Status      string    `json:"status"`
 }
 
-func getContainerInfo(file fs.FileInfo) (*containerInfo, error) {
+func getContainerInfoByName(containerName string) (*containerInfo, error) {
+
+	configFilePath := fmt.Sprint(DefaultContainerRootPath + "/" + containerName + "/" + DefaultConfigName)
+
+	content, err := ioutil.ReadFile(configFilePath)
+
+	if err != nil {
+		log.Errorf("read file %s error %v", configFilePath, err)
+		return nil, err
+	}
+
+	var containerInfo containerInfo
+	if err := json.Unmarshal(content, &containerInfo); err != nil {
+		log.Errorf("unmarshal file %s error %v", configFilePath, err)
+		return nil, err
+	}
+
+	return &containerInfo, nil
+}
+
+func getContainerInfoByFile(file fs.FileInfo) (*containerInfo, error) {
 	containerName := file.Name()
 
 	configFilePath := fmt.Sprint(DefaultContainerRootPath + "/" + containerName + "/" + DefaultConfigName)
@@ -67,7 +87,7 @@ func ContainerRecordList() {
 	var containers []*containerInfo
 
 	for _, file := range files {
-		tmpContainer, err := getContainerInfo(file)
+		tmpContainer, err := getContainerInfoByFile(file)
 		if err != nil {
 			log.Errorf("get container info error %v", err)
 			continue

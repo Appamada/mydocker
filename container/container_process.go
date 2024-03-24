@@ -45,7 +45,7 @@ func NerParentProcess(tty bool, volume string, containerName *string, envSlice [
 	stdLogFilePath := fmt.Sprintf(containerRootPath + "/" + DefaultLogName)
 	fmt.Println(stdLogFilePath)
 
-	file, err := os.Create(stdLogFilePath)
+	stdFile, err := os.Create(stdLogFilePath)
 	if err != nil {
 		log.Errorf("create file %s error %v", stdLogFilePath, err)
 	}
@@ -55,8 +55,8 @@ func NerParentProcess(tty bool, volume string, containerName *string, envSlice [
 		cmd.Stdout = os.Stdout
 		cmd.Stderr = os.Stderr
 	} else {
-		cmd.Stderr = file
-		cmd.Stdout = file
+		cmd.Stderr = stdFile
+		cmd.Stdout = stdFile
 	}
 
 	cmd.ExtraFiles = []*os.File{readPipe} //将管道一端传入到容器进程中,容器进程接收数据

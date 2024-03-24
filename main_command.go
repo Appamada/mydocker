@@ -36,6 +36,20 @@ var stopCommand = cli.Command{
 	},
 }
 
+var startCommand = cli.Command{
+	Name:  "start",
+	Usage: "start a stopped container",
+	Action: func(context *cli.Context) error {
+		if len(context.Args()) < 1 {
+			return fmt.Errorf("missing container id")
+		}
+
+		containerName := context.Args().Get(0)
+		container.StartContainer(containerName)
+		return nil
+	},
+}
+
 var rmCommand = cli.Command{
 	Name:  "rm",
 	Usage: "remove unused containers which is in stopped state",
