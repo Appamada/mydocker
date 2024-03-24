@@ -25,7 +25,8 @@ func RmContainer(containerName string) error {
 	}
 
 	if containerInfo.Status != STOP {
-		return fmt.Errorf("stop container first")
+		log.Errorf("container %s is running", containerName)
+		return fmt.Errorf("container %s is running", containerName)
 	}
 
 	if err := os.RemoveAll(configDirPath); err != nil {

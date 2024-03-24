@@ -24,10 +24,7 @@ func StopContainer(containerName string) {
 		return
 	}
 
-	if err := syscall.Kill(pidInt, syscall.SIGTERM); err != nil {
-		log.Errorf("kill -15 %s error %v", pid, err)
-		return
-	}
+	syscall.Kill(pidInt, syscall.SIGTERM)
 
 	containerDir := fmt.Sprint(DefaultContainerRootPath + "/" + containerName)
 	configFilePath := containerDir + "/" + DefaultConfigName

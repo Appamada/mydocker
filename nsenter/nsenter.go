@@ -31,7 +31,6 @@ void __attribute__((constructor)) enter_namespace(void) {
         return;
     }
 
-
     char nspath[256];
     char *namespace[] = {"pid", "mnt", "ipc", "uts", "net"};
 
